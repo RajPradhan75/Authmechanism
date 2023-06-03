@@ -15,14 +15,25 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+	
+	
+	private final JwtService jwtService;
+	
 
 	@Override
-	protected void doFilterInternal(
-			@NonNull HttpServletRequest request,
-			@NonNull HttpServletResponse response,
-			@NonNull FilterChain filterChain) 
-					throws ServletException, IOException {
+	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+			@NonNull FilterChain filterChain) throws ServletException, IOException {
 
+		final String authHeader = request.getHeader("Authorization"); // bearer token
+		final String jwt;
+		final String userEmail;
+		// check
+		if (authHeader == null || !authHeader.startsWith("Bearer")) {
+			filterChain.doFilter(request, response); // pass request to next filter
+			return;
+		}
+		jwt = authHeader.substring(7); //extract
+		userEmail = jwtService.extractUsername(jwt); // extract the email from JWT Token
 	}
 
 }
