@@ -2,7 +2,11 @@ package com.security.authmechanism.config;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -16,8 +20,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
-	
+	@Autowired
 	private final JwtService jwtService;
+	
+	private final UserDetailsService userDetailsService;
 	
 
 	@Override
@@ -34,6 +40,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 		jwt = authHeader.substring(7); //extract
 		userEmail = jwtService.extractUsername(jwt); // extract the email from JWT Token
+		if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+		}
 	}
 
 }
