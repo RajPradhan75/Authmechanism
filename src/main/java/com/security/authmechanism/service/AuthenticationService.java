@@ -1,0 +1,45 @@
+package com.security.authmechanism.service;
+
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.security.authmechanism.auth.AuthenticationRequest;
+import com.security.authmechanism.auth.AuthenticationResponse;
+import com.security.authmechanism.auth.RegisterRequest;
+import com.security.authmechanism.config.JwtService;
+import com.security.authmechanism.dao.Role;
+import com.security.authmechanism.dao.UserRepository;
+import com.security.authmechanism.entity.User;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class AuthenticationService {
+	
+	private final UserRepository repository;
+	private final PasswordEncoder passwordEncoder;
+	private final JwtService jwtService;
+	
+	
+	public AuthenticationResponse register(RegisterRequest request) {
+		var user =  User.builder()
+				.firstname(request.getFirstname())
+				.lastname(request.getEmail())
+				.password(passwordEncoder.encode(request.getPassword()))
+				.role(request.getRole())
+				.build();		
+				 repository.save(user);
+				 var jwtToken = jwtService.generateToken(user);
+		return AuthenticationResponse
+				.builder()
+				.token(jwtToken)
+				.build();
+	}
+
+	public AuthenticationResponse authenticate(AuthenticationRequest request) {
+		return null;
+	}
+
+}
