@@ -1,6 +1,8 @@
 package com.security.authmechanism.service;
 
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +10,6 @@ import com.security.authmechanism.auth.AuthenticationRequest;
 import com.security.authmechanism.auth.AuthenticationResponse;
 import com.security.authmechanism.auth.RegisterRequest;
 import com.security.authmechanism.config.JwtService;
-import com.security.authmechanism.dao.Role;
 import com.security.authmechanism.dao.UserRepository;
 import com.security.authmechanism.entity.User;
 
@@ -21,7 +22,7 @@ public class AuthenticationService {
 	private final UserRepository repository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
-	
+	private final AuthenticationManager authenticationManager;
 	
 	public AuthenticationResponse register(RegisterRequest request) {
 		var user =  User.builder()
@@ -39,7 +40,18 @@ public class AuthenticationService {
 	}
 
 	public AuthenticationResponse authenticate(AuthenticationRequest request) {
-		return null;
+		authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(
+						request.getEmail(),
+						request.getPassword())
+				);
+		var user = repository.findByEmail(request.getEmail())
+				.orElseThrow();
+		 var jwtToken = jwtService.generateToken(user);
+		 return AuthenticationResponse
+		.builder()
+		.token(jwtToken)
+		.build();
 	}
 
 }
