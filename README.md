@@ -1,6 +1,6 @@
 # authmechanism
 
-•	Features
+•	**Features**
 
 -> Role-based authorization with Spring Security.
 
@@ -8,7 +8,7 @@
 
 -> Password encryption using BCrypt.
 
-•	Technologies
+•	**Technologies**
 
 -->	Spring Boot 3.0.7
 
@@ -41,7 +41,7 @@
 
 
 
-• API’s based on roles
+• **API’s based on roles**
 
 Admin has access to CREATE, UPDATE AND DELETE the products
 
