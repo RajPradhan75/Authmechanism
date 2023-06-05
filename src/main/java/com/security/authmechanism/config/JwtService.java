@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +19,8 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
+
+	private static final Logger logger = Logger.getLogger(JwtService.class.getName());
 
 	@Value("${secret.key}")
 	private String SECRET_KEY;

@@ -1,5 +1,7 @@
 package com.security.authmechanism.config;
 
+import java.util.logging.Logger;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,29 +21,41 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-  private final UserRepository repository;
+	private static final Logger logger = Logger.getLogger(ApplicationConfig.class.getName());
 
-  @Bean
-  public UserDetailsService userDetailsService() {
-    return username -> repository.findByEmail(username)
-        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-  }
+	private final UserRepository repository;
 
-  @Bean
-  public AuthenticationProvider authenticationProvider() {
-    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-    authProvider.setUserDetailsService(userDetailsService());
-    authProvider.setPasswordEncoder(passwordEncoder());
-    return authProvider;
-  }
+	@Bean
+	public UserDetailsService userDetailsService() {
+		return username -> {
+			logger.info("Fetching user details for username: " + username);
+			return repository.findByEmail(username).orElseThrow(() -> {
+				logger.warning("User not found: " + username);
+				return new UsernameNotFoundException("User not found");
+			});
+		};
+	}
 
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-    return config.getAuthenticationManager();
-  }
+	@Bean
+	public AuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		authProvider.setUserDetailsService(userDetailsService());
+		authProvider.setPasswordEncoder(passwordEncoder());
+		logger.info("AuthenticationProvider bean created");
+		return authProvider;
+	}
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		AuthenticationManager authenticationManager = config.getAuthenticationManager();
+		logger.info("AuthenticationManager bean created");
+		return authenticationManager;
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		logger.info("PasswordEncoder bean created");
+		return passwordEncoder;
+	}
 }
