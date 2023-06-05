@@ -23,7 +23,7 @@
 
 • To get started with this project, you will need to have the following installed on your local machine:
 
--->JDK 8+
+-->JDK 17
 
 -->Maven 3+
 
