@@ -1,5 +1,7 @@
 package com.security.authmechanism.controller;
 
+import java.util.logging.Logger;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,15 +20,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
+	private static final Logger logger = Logger.getLogger(AuthenticationController.class.getName());
+
 	private final AuthenticationService service;
 
 	@PostMapping("/register")
 	public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
+		logger.info("Processing registration request...");
 		return ResponseEntity.ok(service.register(request));
 	}
 
 	@PostMapping("/login")
 	public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+		logger.info("Processing authentication request...");
 		return ResponseEntity.ok(service.authenticate(request));
 	}
 }

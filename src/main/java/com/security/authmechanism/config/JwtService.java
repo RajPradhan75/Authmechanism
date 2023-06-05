@@ -26,6 +26,7 @@ public class JwtService {
 	private String SECRET_KEY;
 
 	public String extractUsername(String token) {
+		 logger.info("Extracting username from JWT token...");
 		return extractClaim(token, Claims::getSubject);
 	}
 
@@ -35,6 +36,7 @@ public class JwtService {
 	}
 
 	public String generateToken(UserDetails userDetails) {
+		logger.info("Generating JWT token...");
 		return generateToken(new HashMap<>(), userDetails);
 	}
 
